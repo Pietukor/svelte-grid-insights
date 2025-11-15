@@ -13,13 +13,13 @@ const velocityData = [
   { time: "00:25", speed: 19.7 },
 ];
 
-const accelerationData = [
-  { time: "00:00", x: 0.8, y: -0.3, z: 0.5 },
-  { time: "00:05", x: 1.2, y: 0.4, z: 0.8 },
-  { time: "00:10", x: -0.5, y: 0.9, z: -0.2 },
-  { time: "00:15", x: 0.3, y: -0.6, z: 1.1 },
-  { time: "00:20", x: 1.5, y: 0.2, z: -0.4 },
-  { time: "00:25", x: 0.6, y: 0.7, z: 0.9 },
+const altitudeData = [
+  { time: "00:00", altitude: 45 },
+  { time: "00:05", altitude: 58 },
+  { time: "00:10", altitude: 72 },
+  { time: "00:15", altitude: 65 },
+  { time: "00:20", altitude: 88 },
+  { time: "00:25", altitude: 82 },
 ];
 
 const stats = [
@@ -69,11 +69,11 @@ const Index = () => {
           </div>
         </div>
 
-        <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-2.5 md:grid-cols-2 lg:grid-cols-4">
           {stats.map((stat, index) => {
             const Icon = stat.icon;
             return (
-              <Card key={index} className="border-border/50 bg-card/50 backdrop-blur transition-all hover:border-primary/50 hover:shadow-lg">
+              <Card key={index} className="border-border/50 bg-card backdrop-blur transition-all hover:border-primary/50 hover:shadow-lg">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
                     {stat.title}
@@ -92,7 +92,7 @@ const Index = () => {
         </div>
 
         <div className="grid gap-3 lg:grid-cols-2">
-          <Card className="border-border/50 bg-card/50 backdrop-blur transition-all hover:border-primary/50 hover:shadow-lg">
+          <Card className="border-border/50 bg-card backdrop-blur transition-all hover:border-primary/50 hover:shadow-lg">
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium uppercase tracking-wider text-foreground">Velocity Profile</CardTitle>
             </CardHeader>
@@ -101,11 +101,11 @@ const Index = () => {
                 <AreaChart data={velocityData}>
                   <defs>
                     <linearGradient id="colorVelocity" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.4} />
+                      <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
                       <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
+                  <CartesianGrid strokeDasharray="1 1" stroke="hsl(var(--border))" opacity={0.2} />
                   <XAxis 
                     dataKey="time" 
                     stroke="hsl(var(--muted-foreground))" 
@@ -127,7 +127,7 @@ const Index = () => {
                     }}
                   />
                   <Area
-                    type="monotone"
+                    type="linear"
                     dataKey="speed"
                     stroke="hsl(var(--primary))"
                     strokeWidth={2}
@@ -139,14 +139,14 @@ const Index = () => {
             </CardContent>
           </Card>
 
-          <Card className="border-border/50 bg-card/50 backdrop-blur transition-all hover:border-primary/50 hover:shadow-lg">
+          <Card className="border-border/50 bg-card backdrop-blur transition-all hover:border-primary/50 hover:shadow-lg">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium uppercase tracking-wider text-foreground">3-Axis Acceleration</CardTitle>
+              <CardTitle className="text-sm font-medium uppercase tracking-wider text-foreground">Altitude Tracking</CardTitle>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={accelerationData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
+                <LineChart data={altitudeData}>
+                  <CartesianGrid strokeDasharray="1 1" stroke="hsl(var(--border))" opacity={0.2} />
                   <XAxis 
                     dataKey="time" 
                     stroke="hsl(var(--muted-foreground))" 
@@ -157,7 +157,7 @@ const Index = () => {
                     stroke="hsl(var(--muted-foreground))" 
                     fontSize={12}
                     tickLine={false}
-                    label={{ value: 'm/s²', angle: -90, position: 'insideLeft', style: { fontSize: 12 } }}
+                    label={{ value: 'meters', angle: -90, position: 'insideLeft', style: { fontSize: 12 } }}
                   />
                   <Tooltip
                     contentStyle={{
@@ -168,25 +168,11 @@ const Index = () => {
                     }}
                   />
                   <Line 
-                    type="monotone" 
-                    dataKey="x" 
-                    stroke="#ef4444" 
+                    type="linear"
+                    dataKey="altitude" 
+                    stroke="hsl(var(--primary))" 
                     strokeWidth={2}
-                    dot={false}
-                  />
-                  <Line 
-                    type="monotone" 
-                    dataKey="y" 
-                    stroke="#22c55e" 
-                    strokeWidth={2}
-                    dot={false}
-                  />
-                  <Line 
-                    type="monotone" 
-                    dataKey="z" 
-                    stroke="#3b82f6" 
-                    strokeWidth={2}
-                    dot={false}
+                    dot={{ fill: "hsl(var(--primary))", r: 3 }}
                   />
                 </LineChart>
               </ResponsiveContainer>
