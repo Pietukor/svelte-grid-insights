@@ -1,57 +1,89 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { TrendingUp, Users, DollarSign, ShoppingCart } from "lucide-react";
+import { AreaChart, Area, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { Gauge, Wind, Compass, Zap, Moon, Sun } from "lucide-react";
+import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
 
-const revenueData = [
-  { month: "Jan", revenue: 4200 },
-  { month: "Feb", revenue: 5100 },
-  { month: "Mar", revenue: 4800 },
-  { month: "Apr", revenue: 6200 },
-  { month: "May", revenue: 7100 },
-  { month: "Jun", revenue: 6800 },
+const velocityData = [
+  { time: "00:00", speed: 12.4 },
+  { time: "00:05", speed: 15.2 },
+  { time: "00:10", speed: 18.6 },
+  { time: "00:15", speed: 16.8 },
+  { time: "00:20", speed: 21.3 },
+  { time: "00:25", speed: 19.7 },
 ];
 
-const trafficData = [
-  { day: "Mon", visitors: 890 },
-  { day: "Tue", visitors: 1200 },
-  { day: "Wed", visitors: 950 },
-  { day: "Thu", visitors: 1400 },
-  { day: "Fri", visitors: 1600 },
-  { day: "Sat", visitors: 1100 },
-  { day: "Sun", visitors: 800 },
+const accelerationData = [
+  { time: "00:00", x: 0.8, y: -0.3, z: 0.5 },
+  { time: "00:05", x: 1.2, y: 0.4, z: 0.8 },
+  { time: "00:10", x: -0.5, y: 0.9, z: -0.2 },
+  { time: "00:15", x: 0.3, y: -0.6, z: 1.1 },
+  { time: "00:20", x: 1.5, y: 0.2, z: -0.4 },
+  { time: "00:25", x: 0.6, y: 0.7, z: 0.9 },
 ];
 
 const stats = [
-  { title: "Total Revenue", value: "$45,231", icon: DollarSign, change: "+20.1%" },
-  { title: "Active Users", value: "2,345", icon: Users, change: "+12.5%" },
-  { title: "Total Orders", value: "892", icon: ShoppingCart, change: "+8.2%" },
-  { title: "Growth Rate", value: "23.5%", icon: TrendingUp, change: "+4.3%" },
+  { title: "Current Speed", value: "19.7 m/s", icon: Gauge, status: "Active" },
+  { title: "Acceleration", value: "2.3 m/s²", icon: Zap, status: "Nominal" },
+  { title: "Fan Speed", value: "4,250 RPM", icon: Wind, status: "Optimal" },
+  { title: "Direction", value: "N 42° E", icon: Compass, status: "Tracking" },
 ];
 
 const Index = () => {
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  const [isConnected, setIsConnected] = useState(true);
+
+  useEffect(() => {
+    setMounted(true);
+    // Simulate connection status check
+    const interval = setInterval(() => {
+      setIsConnected(prev => Math.random() > 0.1 ? true : prev);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  if (!mounted) return null;
+
   return (
-    <div className="min-h-screen bg-background p-6 md:p-8">
-      <div className="mx-auto max-w-7xl space-y-8">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
-          <p className="text-muted-foreground">Welcome back! Here's what's happening today.</p>
+    <div className="min-h-screen bg-background p-4 md:p-6">
+      <div className="mx-auto max-w-7xl space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight text-foreground">Drone Detection System</h1>
+            <p className="text-sm text-muted-foreground">Real-time motion analysis and tracking</p>
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2">
+              <div className={`h-2 w-2 rounded-full ${isConnected ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`} />
+              <span className="text-sm font-medium text-foreground">
+                {isConnected ? 'Connected' : 'Disconnected'}
+              </span>
+            </div>
+            <button
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              className="rounded-lg border border-border bg-card p-2 transition-colors hover:bg-accent"
+            >
+              {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+            </button>
+          </div>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
           {stats.map((stat, index) => {
             const Icon = stat.icon;
             return (
-              <Card key={index} className="transition-all hover:shadow-lg">
+              <Card key={index} className="border-border/50 bg-card/50 backdrop-blur transition-all hover:border-primary/50 hover:shadow-lg">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium text-muted-foreground">
+                  <CardTitle className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
                     {stat.title}
                   </CardTitle>
-                  <Icon className="h-4 w-4 text-muted-foreground" />
+                  <Icon className="h-4 w-4 text-primary" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-foreground">{stat.value}</div>
-                  <p className="text-xs text-muted-foreground">
-                    <span className="text-primary">{stat.change}</span> from last month
+                  <div className="text-2xl font-bold tabular-nums text-foreground">{stat.value}</div>
+                  <p className="text-xs font-medium text-primary">
+                    {stat.status}
                   </p>
                 </CardContent>
               </Card>
@@ -59,61 +91,104 @@ const Index = () => {
           })}
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-2">
-          <Card className="transition-all hover:shadow-lg">
-            <CardHeader>
-              <CardTitle className="text-foreground">Revenue Overview</CardTitle>
+        <div className="grid gap-3 lg:grid-cols-2">
+          <Card className="border-border/50 bg-card/50 backdrop-blur transition-all hover:border-primary/50 hover:shadow-lg">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium uppercase tracking-wider text-foreground">Velocity Profile</CardTitle>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
-                <AreaChart data={revenueData}>
+                <AreaChart data={velocityData}>
                   <defs>
-                    <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
+                    <linearGradient id="colorVelocity" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.4} />
                       <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                  <XAxis dataKey="month" stroke="hsl(var(--muted-foreground))" />
-                  <YAxis stroke="hsl(var(--muted-foreground))" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
+                  <XAxis 
+                    dataKey="time" 
+                    stroke="hsl(var(--muted-foreground))" 
+                    fontSize={12}
+                    tickLine={false}
+                  />
+                  <YAxis 
+                    stroke="hsl(var(--muted-foreground))" 
+                    fontSize={12}
+                    tickLine={false}
+                    label={{ value: 'm/s', angle: -90, position: 'insideLeft', style: { fontSize: 12 } }}
+                  />
                   <Tooltip
                     contentStyle={{
                       backgroundColor: "hsl(var(--card))",
                       border: "1px solid hsl(var(--border))",
-                      borderRadius: "8px",
+                      borderRadius: "6px",
+                      fontSize: "12px",
                     }}
                   />
                   <Area
                     type="monotone"
-                    dataKey="revenue"
+                    dataKey="speed"
                     stroke="hsl(var(--primary))"
+                    strokeWidth={2}
                     fillOpacity={1}
-                    fill="url(#colorRevenue)"
+                    fill="url(#colorVelocity)"
                   />
                 </AreaChart>
               </ResponsiveContainer>
             </CardContent>
           </Card>
 
-          <Card className="transition-all hover:shadow-lg">
-            <CardHeader>
-              <CardTitle className="text-foreground">Weekly Traffic</CardTitle>
+          <Card className="border-border/50 bg-card/50 backdrop-blur transition-all hover:border-primary/50 hover:shadow-lg">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium uppercase tracking-wider text-foreground">3-Axis Acceleration</CardTitle>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={trafficData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                  <XAxis dataKey="day" stroke="hsl(var(--muted-foreground))" />
-                  <YAxis stroke="hsl(var(--muted-foreground))" />
+                <LineChart data={accelerationData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
+                  <XAxis 
+                    dataKey="time" 
+                    stroke="hsl(var(--muted-foreground))" 
+                    fontSize={12}
+                    tickLine={false}
+                  />
+                  <YAxis 
+                    stroke="hsl(var(--muted-foreground))" 
+                    fontSize={12}
+                    tickLine={false}
+                    label={{ value: 'm/s²', angle: -90, position: 'insideLeft', style: { fontSize: 12 } }}
+                  />
                   <Tooltip
                     contentStyle={{
                       backgroundColor: "hsl(var(--card))",
                       border: "1px solid hsl(var(--border))",
-                      borderRadius: "8px",
+                      borderRadius: "6px",
+                      fontSize: "12px",
                     }}
                   />
-                  <Bar dataKey="visitors" fill="hsl(var(--primary))" radius={[8, 8, 0, 0]} />
-                </BarChart>
+                  <Line 
+                    type="monotone" 
+                    dataKey="x" 
+                    stroke="#ef4444" 
+                    strokeWidth={2}
+                    dot={false}
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="y" 
+                    stroke="#22c55e" 
+                    strokeWidth={2}
+                    dot={false}
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="z" 
+                    stroke="#3b82f6" 
+                    strokeWidth={2}
+                    dot={false}
+                  />
+                </LineChart>
               </ResponsiveContainer>
             </CardContent>
           </Card>
